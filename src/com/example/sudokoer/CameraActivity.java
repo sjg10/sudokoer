@@ -1,10 +1,12 @@
 package com.example.sudokoer;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
@@ -42,7 +44,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	public OrientationEventListener orientationEventListener;
 	public SurfaceView surfaceView;
 	public SurfaceHolder surfaceHolder;
-	public AsyncTask<byte[], Integer, String> ComputeSudoku;
+	public AsyncTask<byte[], Integer, Bitmap> ComputeSudoku;
 	//This ensures that we retrieve things from OpenCV app.
 	//Consider making static!
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -125,54 +127,45 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
+		orientationEventListener.disable();
+ 		findViewById(R.id.buttonTake).setEnabled(false);
+ 		camera.release();
 		Toast.makeText(this, "Picture taken", Toast.LENGTH_LONG).show();
 		//prepare AsyncTask to run:
-		ComputeSudoku = new AsyncTask<byte[], Integer, String>() {
-		     protected String doInBackground(byte[] data) {
-		    	//encode for OpenCV
-		 		Mat raw = new Mat(1, data.length, CvType.CV_8U); 
-		 		//TODO: Not outputting grayscale!
-		 		Mat M=Highgui.imdecode(raw, Highgui.IMREAD_GRAYSCALE);
-		 		
-		 		//apply transformations
-		 		Mat A = new Mat(M.size(),M.type());
-		 		//TODO: THRESHOLD NOT DOING ANYTHING (just copying)
-		 		Imgproc.threshold(M, A, 128, 255, Imgproc.THRESH_BINARY);
-		 		A.get(0,0,data);
-		 		
-
-		 		//Paint onto screen for debug
-		         Bitmap bmp;
-		         bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-		         Canvas  canvas = surfaceHolder.lockCanvas();
-		         if(canvas != null){
-		         	
-		         	canvas.drawBitmap(bmp, 0, 0, null); 
-		 }
-		     surfaceHolder.unlockCanvasAndPost(canvas);
+		ComputeSudoku = new AsyncTask<byte[], Integer, Bitmap>() {
+			private byte[] out;
+			@Override
+		     protected Bitmap doInBackground(byte[]... data) {
+		    	//TODO: place execution for async here when done.
 		     return null;
 		     }
-		     
 
 		     protected void onProgressUpdate(Integer... progress) {}
-
-			@Override
-			protected String doInBackground(byte[]... params) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-		     			
+     			
 		};
- 		//Reset controls
- 		orientationEventListener.disable();
- 		findViewById(R.id.buttonTake).setEnabled(false);
- 		//execute
-		ComputeSudoku.execute(data);
-		//release camera
-		camera.release();
+		byte[] out=new byte[data.length];
+    	//encode for OpenCV
+ 		Mat raw = new Mat(1, data.length, CvType.CV_8U); 
+ 		//TODO: Not outputting grayscale!
+ 		Mat M=Highgui.imdecode(raw, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+ 		Mat A = new Mat(M.size(),M.type());
+ 		Core.flip(M, A, 0);
+ 		
+ 		//Imgproc.cvtColor(M, A, Imgproc.COLOR_BGR2GRAY);
+ 		//apply transformations
+ 		
+ 		//TODO: THRESHOLD NOT DOING ANYTHING (just copying)
+ 		//Imgproc.threshold(M, A, 128, 255, Imgproc.THRESH_BINARY);
+ 		A.get(0,0,out);
+ 		
+ 		
+        Bitmap bmp=BitmapFactory.decodeByteArray(out, 0, out.length);
 
+        Canvas  canvas = surfaceHolder.lockCanvas();
+        canvas.drawBitmap(bmp, 0, 0,null);
+        surfaceHolder.unlockCanvasAndPost(canvas);
 }
+       
 		
 		
 		
