@@ -1,5 +1,9 @@
 package com.example.sudokoer;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -21,7 +26,27 @@ import android.widget.ImageButton;
  * @see SystemUiHider
  */
 public class MainActivity extends Activity {
-	
+	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+	    @Override
+	    public void onManagerConnected(int status) {
+	        switch (status) {
+	            case LoaderCallbackInterface.SUCCESS:
+	            {
+	                Log.i("OpenCV", "OpenCV loaded successfully");
+	            } break;
+	            default:
+	            {
+	                super.onManagerConnected(status);
+	            } break;
+	        }
+	    }
+	};
+	@Override
+	public void onResume()
+	{
+	    super.onResume();
+	    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
