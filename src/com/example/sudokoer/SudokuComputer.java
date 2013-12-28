@@ -1,28 +1,26 @@
 package com.example.sudokoer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+
+import com.googlecode.tesseract.android.TessBaseAPI;
+import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Surface;
@@ -32,6 +30,7 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 	private CameraActivity cameraAct;
 	private SudokuComputer updateTask;
 	private ProgressDialog dialog;
+	private Canvas  canvas;
 	private int width;
 	private int height;
 
@@ -47,17 +46,19 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 		});
 		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		dialog.setProgress(0);
-		dialog.setMax(2);
+		dialog.setMax(100);
 		dialog.setMessage("Calculating");
 
 	}
 
 	@Override
 	protected void onPreExecute() {
-		cameraAct.orientationEventListener.disable();
-		cameraAct.buttonTake.setEnabled(false);
-		cameraAct.camera.release();
 
+		cameraAct.endCamera();
+
+		//clear canvas
+		canvas= cameraAct.surfaceHolder.lockCanvas();
+		cameraAct.surfaceHolder.unlockCanvasAndPost(canvas);
 		dialog.show();
 	}
 
@@ -66,8 +67,11 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 		//lets decode the image and put it in B&W
 		Mat raw = new Mat(1, data[0].length, CvType.CV_8U); 
 		raw.put(0, 0, data[0]);
+		if (isCancelled()) return null;
+		publishProgress(1);
 		Mat M=Highgui.imdecode(raw, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
-
+		if (isCancelled()) return null;
+		publishProgress(2);
 		//lets make sure it's the right way round!
 		switch(cameraAct.mLastRotation){
 		case Surface.ROTATION_0: //portrait
@@ -83,15 +87,24 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 		}
 		width=M.cols();
 		height=M.rows();
+		if (isCancelled()) return null;
+		publishProgress(3);
 
 		//Now lets invert colours and intensify the blacks:
-		//You can always tweak the values a little more:
-		Imgproc.adaptiveThreshold(M, M, 255, Imgproc.BORDER_CONSTANT, Imgproc.THRESH_BINARY_INV, 9, 5);
-
-		//And find the largest connected component:
+		//TODO:Tweak values..the OCR is so close!
+		Imgproc.adaptiveThreshold(M, M, 255, Imgproc.BORDER_CONSTANT, Imgproc.THRESH_BINARY_INV, 5, 2);
+		if (isCancelled()) return null;
+		publishProgress(4);
+		//And find the connected components:
 		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		Imgproc.findContours(M, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+		Mat contourMat=new Mat();
+		M.copyTo(contourMat);
+		Imgproc.findContours(contourMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 		if(contours.isEmpty()) return "fail";
+		if (isCancelled()) return null;
+		publishProgress(5);
+
+		//and retrieve the largest one:
 		double maxArea = -1;
 		int maxAreaIdx = -1;
 		for (int idx = 0; idx < contours.size(); idx++) {
@@ -103,11 +116,17 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 			}
 		}
 		MatOfPoint2f contour=new MatOfPoint2f(contours.get(maxAreaIdx).toArray());
+		if (isCancelled()) return null;
+		publishProgress(6);
+
+
 
 		//Lets pretend the component is a quadrilateral:
-		//TODO: Fiddle the epsilon so 4 corners come up more often
 		Imgproc.approxPolyDP(contour,contour, 5.0, true);
 		if(contour.rows()!=4) return "fail";
+		if (isCancelled()) return null;
+		publishProgress(7);
+
 
 		//Now we match the corners to that of a square
 		Point[] contourPoints=contour.toArray();
@@ -118,7 +137,7 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 		}
 		double bottomrightDot=gram[0];
 		double topleftDot=gram[0];
-		
+
 		for(int i=1;i<4;i++){
 			if(gram[i]<topleftDot){
 				topleftDot=gram[i];
@@ -144,46 +163,94 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 				}
 				break;
 			}}
-		Log.e("order",Integer.toString(order[0])+Integer.toString(order[1])+Integer.toString(order[2])+Integer.toString(order[3]));
-		Log.e("points",contourPoints[0].toString()+"\n"+contourPoints[1].toString()+"\n"+contourPoints[2].toString()+"\n"+contourPoints[3].toString());
+		if (isCancelled()) return null;
+		publishProgress(8);
+
+		//Lets create an appropriate square:
 		int size= width>height?width:height;
 		Point[] squarePoints={new Point(0,0),new Point(size,0),new Point(size,size),new Point(0,size)};
 		Point[] out=new Point[4];
 		for(int i=0;i<squarePoints.length;i++)
 			out[i]=squarePoints[order[i]];
 		MatOfPoint2f square=new MatOfPoint2f(out);
-
 		if (isCancelled()) return null;
+		publishProgress(9);
 
 		//And transform to a square:
 		// compute transformation matrix
 		Mat H = Imgproc.getPerspectiveTransform(contour, square);
 		Imgproc.warpPerspective(M, M, H,new Size(size,size));
-		//TODO: OCR and finish!
-		Bitmap bmp = Bitmap.createBitmap(size,  size,Bitmap.Config.ARGB_8888);
-		Utils.matToBitmap(M, bmp);
+		if (isCancelled()) return null;
+		publishProgress(10);
 
-		//Artificial slowdown:
-		for(int i=0;i<2;i++){
-			try {
-				if(isCancelled()) return null;
-				publishProgress (i);
-				Thread.sleep(1000);
+		//Now lets initialise the OCR
+		TessBaseAPI baseApi = new TessBaseAPI();
+		baseApi.init(cameraAct.getFilesDir().getAbsolutePath(), "eng");
+		if (isCancelled()) return null;
+		publishProgress(11);
+		
+		baseApi.setVariable("tessedit_char_whitelist", "123456789");
+		baseApi.setPageSegMode(PageSegMode.PSM_SINGLE_CHAR);
+		String[][] grid=new String[9][9];
+		int inc=size/9; 
+		Bitmap bmp = Bitmap.createBitmap(inc-16, inc-16,Bitmap.Config.ARGB_8888);
+		if (isCancelled()) return null;
+    	publishProgress(12);
+    	
+    	//And begin:
+		for (int i=0;i<9;i++){
+			for(int j=0;j<9;j++){
+				if (isCancelled()) return null;
+				publishProgress(j+i*9+13);
+				//TODO: consider removing the '8's that strip the border by something more dynamic
+				Utils.matToBitmap(M.submat(i*inc+8,(i+1)*inc-8,j*inc+8,(j+1)*inc-8),bmp);
+				baseApi.setImage(bmp);
+				grid[i][j] = baseApi.getUTF8Text();
+				baseApi.clear();
+				//for debug
+				/*canvas = cameraAct.surfaceHolder.lockCanvas();
+						if(canvas != null){
 
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+							canvas.drawBitmap(bmp, 0, 0, null);
+							cameraAct.surfaceHolder.unlockCanvasAndPost(canvas);
+
+						}
+				        Log.e("FOUND",grid[i][j]);
+				        try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}*/
 			}
-
 		}
-		Canvas  canvas = cameraAct.surfaceHolder.lockCanvas();
-		if(canvas != null){
+		baseApi.end();
+		if (isCancelled()) return null;
+		publishProgress(94);
+		
+		//Now lets begin to solve:
+		SudokuGrid puzzle = new SudokuGrid(grid);
+		Log.e("puzzle",puzzle.initialGridString());
+		if (isCancelled()) return null;
+		publishProgress(95);
+		
+		//And return the solution
+		canvas = cameraAct.surfaceHolder.lockCanvas();
+		Paint paint = new Paint(); 
+		paint.setColor(Color.WHITE); 
+		paint.setStyle(Style.FILL); 
+		canvas.drawPaint(paint);
+		paint.setColor(Color.BLACK); 
+		int font=cameraAct.getResources().getDimensionPixelSize(R.dimen.myFontSize);
+		paint.setTextSize(cameraAct.getResources().getDimensionPixelSize(R.dimen.myFontSize));
+		String[] lines=puzzle.initialGridString().split("\n");
+		int height=font;
+		for (String s:lines){
+			canvas.drawText(s, 5,height,paint);
 
-			canvas.drawBitmap(bmp, 0, 0, null); 
-		}
+			height+=(font+2);}
 		cameraAct.surfaceHolder.unlockCanvasAndPost(canvas);
-
-
+		if (isCancelled()) return null;
+		publishProgress(100);
 		return null;
 	}
 
@@ -198,14 +265,19 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 			ad.setMessage("The puzzle was not detected.\nPlease ensure puzzle fills most of the screen and is not obscured and try again.\n");  
 			ad.setButton(AlertDialog.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {  
 				@Override  
-				public void onClick(DialogInterface dialog, int which) {  
-					cameraAct.orientationEventListener.enable();
-					cameraAct.initialiseCamera(false);//TODO:Doesnt orient right first shot!
+				public void onClick(DialogInterface dialog, int which) {
+					//cameraAct.initialiseCamera(false);//TODO:Doesnt work, to replace finish()
+					cameraAct.finish();
 
 				}  
 			});  
 			ad.show();  
 
+		}
+		else{
+			cameraAct.previewMode=false;
+			cameraAct.buttonTake.setText("Retake");
+			cameraAct.buttonTake.setEnabled(true);
 		}
 	}
 	public void rotate_image_90n(Mat src, Mat dst, int angle){
@@ -229,9 +301,9 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 	}
 	@Override
 	protected void onCancelled(){
-		cameraAct.orientationEventListener.enable();
-		cameraAct.initialiseCamera(false);//TODO:Doesnt orient right first shot!
 		Toast.makeText(cameraAct, "Cancelled", Toast.LENGTH_SHORT).show();
+		//cameraAct.initialiseCamera(false);//TODO:Doesnt work, to replace finish()
+		cameraAct.finish();
 	}
 
 };

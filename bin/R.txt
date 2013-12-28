@@ -5,6 +5,7 @@ int attr show_fps 0x7f010000
 int color black_overlay 0x7f050000
 int dimen activity_horizontal_margin 0x7f060000
 int dimen activity_vertical_margin 0x7f060001
+int dimen myFontSize 0x7f060002
 int drawable ic_launcher 0x7f020000
 int drawable ic_launcher_ 0x7f020001
 int drawable ic_launcher_sudokubutton 0x7f020002

@@ -11,17 +11,8 @@ import android.hardware.Camera.Parameters;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
-import android.view.KeyEvent;
-import android.view.OrientationEventListener;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.Button;
-import android.os.Process;
 
 public class CameraActivity extends Activity implements Camera.PictureCallback,SurfaceHolder.Callback{
 	public Camera camera;
@@ -30,11 +21,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	public Button buttonTake;
 	public SurfaceView surfaceView;
 	public SurfaceHolder surfaceHolder;
-	//This ensures that we retrieve things from OpenCV app.
-	//Consider making static!
-
-
-
+	public boolean previewMode=true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,12 +42,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 		}
 
 		};
-
-		if (orientationEventListener.canDetectOrientation()) {
-		    orientationEventListener.enable();
-		}
 		initialiseCamera(true);
-		
 	}
 
 	@Override
@@ -73,26 +55,37 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 }
 	
 	public void takePhoto(View view){
-		camera.takePicture(null, null, this);
+		if (previewMode)
+			camera.takePicture(null, null, this);
+		else{/*TODO:try this! (needs though on thrown above.
+			buttonTake.setText("Take Photo");
+			initialiseCamera(false);
+			previewMode=true;*/
+			//For now:
+			finish();
+		}
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {}
+			int height) {
+	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
+			Log.e("Err",Log.getStackTraceString(e));
+			//TODO: Doesn't work if has been used
 		    AlertDialog ad = new AlertDialog.Builder(this).create();
 		    ad.setTitle("Camera Error");
 		    ad.setCancelable(false); // This blocks the 'BACK' button  
 		    ad.setMessage("Another app may be using the camera.\nExit app and try again.\n");  
 		    ad.setButton(AlertDialog.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {  
 		        @Override  
-		        public void onClick(DialogInterface dialog, int which) {  
-		        	Process.sendSignal(Process.myPid(), Process.SIGNAL_KILL);          
+		        public void onClick(DialogInterface dialog, int which) {
+		        	finish();
 		        }  
 		    });  
 		    ad.show();  
@@ -100,44 +93,49 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 		camera.startPreview();
 		reorientCamera();
 		buttonTake.setEnabled(true);
+		
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		orientationEventListener.disable();
-		camera.release();
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	    	orientationEventListener.disable();
-	        camera.release();
-	        finish();
-	        return true;
-	    }
-
-	    return super.onKeyDown(keyCode, event);
 	}
 
 	public void initialiseCamera(boolean firstTime) {
+		//TODO: Doesn't work when firstTime=false 
+		if (orientationEventListener.canDetectOrientation())
+		    orientationEventListener.enable();
+		if (camera==null){
 		camera = Camera.open();
-		camera.autoFocus(null);
 		Camera.Parameters parameters = camera.getParameters();
 	    parameters.setRotation(0);
 	    parameters.setZoom(0);
 	    parameters.setPictureFormat(PixelFormat.RGB_565);
 	    parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);//TODO: Change to macro?
 	    camera.setParameters(parameters);
-	    if(firstTime){
-	    	surfaceView = (SurfaceView)findViewById(R.id.surfaceView1);
-	    	surfaceHolder=surfaceView.getHolder();
-	    	surfaceHolder.addCallback(this);}
-	    else{
-	    	//still doesn't match here!
-	    	surfaceCreated(surfaceHolder);
+	    surfaceView = (SurfaceView)findViewById(R.id.surfaceView1);
+	    surfaceHolder=surfaceView.getHolder();
+	    surfaceHolder.addCallback(this);
+	    if(!firstTime){
+	    	try{
+				camera.setPreviewDisplay(surfaceHolder);}
+	    	catch(IOException e){
+	    	}
+	    	camera.startPreview();
+	    	
+			reorientCamera();
+			buttonTake.setEnabled(true);
+	    }
 	    }
 		
+	}
+	
+	public void endCamera(){
+		if (camera!=null){
+			camera.release();
+			camera=null;
+			surfaceHolder.removeCallback(this);
+			orientationEventListener.disable();
+		}
 	}
 	
 	public void reorientCamera() {
@@ -161,5 +159,9 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	    	mLastRotation=rot;
 		
 	}}
-
+	@Override
+	public void onDestroy(){
+		endCamera();
+		super.onDestroy();
+	}
 }
