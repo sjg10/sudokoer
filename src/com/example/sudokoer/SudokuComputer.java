@@ -15,7 +15,6 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
