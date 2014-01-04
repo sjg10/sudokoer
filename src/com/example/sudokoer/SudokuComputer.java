@@ -15,6 +15,7 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -232,7 +233,7 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 		if (isCancelled()) return null;
 		publishProgress(95);
 		
-		//And return the solution
+		/*//And return the solution
 		canvas = cameraAct.surfaceHolder.lockCanvas();
 		Paint paint = new Paint(); 
 		paint.setColor(Color.WHITE); 
@@ -247,9 +248,13 @@ public class SudokuComputer extends AsyncTask<byte[], Integer, String> {
 			canvas.drawText(s, 5,height,paint);
 
 			height+=(font+2);}
-		cameraAct.surfaceHolder.unlockCanvasAndPost(canvas);
+		cameraAct.surfaceHolder.unlockCanvasAndPost(canvas);*/
 		if (isCancelled()) return null;
 		publishProgress(100);
+		Intent intent = new Intent(cameraAct, SolutionActivity.class);
+		intent.putExtra("sudoku", puzzle);
+		cameraAct.startActivity(intent);//TODO: might not work!
+		
 		return null;
 	}
 

@@ -19,7 +19,7 @@ import android.view.WindowManager;
 public class MainActivity extends Activity {
 
 	//This ensures that we retrieve things from OpenCV app.
-	//TODO: make static (ie not from OpenCV app)!
+	//TODO: make static (i.e. not from OpenCV app)!
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 		@Override
 		public void onManagerConnected(int status) {
@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
 		}
 	}
 	public void startCamera(View view){
+		//TODO: Allow start with or without camera
 		Intent intent = new Intent(this, CameraActivity.class);
 		startActivity(intent);
 	}
