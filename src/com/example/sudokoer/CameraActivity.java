@@ -1,3 +1,21 @@
+/**
+ *  Sudokoer
+ *  Component CameraActivity
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  
+ *  Sudokoer is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Sudokoer is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Sudokoer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.example.sudokoer;
 
 import java.io.IOException;
@@ -21,7 +39,6 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	public Button buttonTake;
 	public SurfaceView surfaceView;
 	public SurfaceHolder surfaceHolder;
-	public boolean previewMode=true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,20 +67,12 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 
 		
 		//prepare AsyncTask to run:
-		SudokuComputer sc =new SudokuComputer(this);
+		SudokuRecogniser sc =new SudokuRecogniser(this);
 		sc.execute(data);
 }
 	
 	public void takePhoto(View view){
-		if (previewMode)
 			camera.takePicture(null, null, this);
-		else{/*TODO:try this! (needs though on thrown above.
-			buttonTake.setText("Take Photo");
-			initialiseCamera(false);
-			previewMode=true;*/
-			//For now:
-			finish();
-		}
 	}
 
 	@Override
@@ -77,7 +86,6 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
 			Log.e("Err",Log.getStackTraceString(e));
-			//TODO: Doesn't work if has been used
 		    AlertDialog ad = new AlertDialog.Builder(this).create();
 		    ad.setTitle("Camera Error");
 		    ad.setCancelable(false); // This blocks the 'BACK' button  
@@ -101,7 +109,6 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	}
 
 	public void initialiseCamera(boolean firstTime) {
-		//TODO: Doesn't work when firstTime=false 
 		if (orientationEventListener.canDetectOrientation())
 		    orientationEventListener.enable();
 		if (camera==null){
@@ -121,8 +128,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	    	catch(IOException e){
 	    	}
 	    	camera.startPreview();
-	    	
-			reorientCamera();
+			reorientCamera();//TODO: doesn't actually work at this point!
 			buttonTake.setEnabled(true);
 	    }
 	    }
@@ -143,7 +149,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	    	int rot=display.getRotation();
 	    	if(rot!= mLastRotation){
 	    	switch(rot){
-	    	case Surface.ROTATION_0: //portait
+	    	case Surface.ROTATION_0: //portrait
 	    		camera.setDisplayOrientation(90);
 	    		break;
 	    	case Surface.ROTATION_90: //left_landscape

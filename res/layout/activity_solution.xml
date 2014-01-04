@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:configChanges="keyboardHidden|orientation"
     tools:context=".SolutionActivity" >
 
         <TableLayout
@@ -10,7 +11,8 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:numColumns="9" >
+            android:numColumns="9"
+            android:shrinkColumns="*" >
 
         </TableLayout>
 
@@ -18,7 +20,8 @@
             android:id="@+id/buttonSolve"
             android:layout_width="fill_parent"
             android:layout_height="50dp"
-            android:text="Solve"
+            android:text="@string/solve"
+            android:enabled="false"
             android:onClick="solve" />
 
     </LinearLayout>

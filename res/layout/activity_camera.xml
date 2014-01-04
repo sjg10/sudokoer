@@ -16,6 +16,6 @@
             android:layout_width="fill_parent"
             android:layout_height="50dp"
             android:enabled="false"
-            android:text="Take Photo" 
+            android:text="@string/takephoto" 
             android:onClick="takePhoto"/>
     </LinearLayout>

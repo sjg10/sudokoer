@@ -1,3 +1,21 @@
+/**
+ *  Sudokoer
+ *  Component MainActivity
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  
+ *  Sudokoer is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Sudokoer is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Sudokoer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.example.sudokoer;
 
 import java.io.*;
@@ -14,12 +32,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RadioButton;
 
 
 public class MainActivity extends Activity {
-
+	private boolean autoInput=true;
 	//This ensures that we retrieve things from OpenCV app.
-	//TODO: make static (i.e. not from OpenCV app)!
+	//TODO: Consider making static (i.e. not from OpenCV app)!
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 		@Override
 		public void onManagerConnected(int status) {
@@ -51,6 +70,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		installFiles();
+		
 	}
 
 	private void installFiles() {
@@ -66,7 +86,7 @@ public class MainActivity extends Activity {
 		//Check if we have done this before!
 		File file = new File(getFilesDir().getAbsolutePath()+"/tessdata/"+files[0]);
 		if(!file.exists())  {
-			Log.e("Sudokoer", "Installing files");
+			Log.i("Sudokoer", "Installing files");
 			for(String filename : files) {
 				//Start copying!
 				InputStream in = null;
@@ -95,9 +115,28 @@ public class MainActivity extends Activity {
 			out.write(buffer, 0, read);
 		}
 	}
-	public void startCamera(View view){
-		//TODO: Allow start with or without camera
-		Intent intent = new Intent(this, CameraActivity.class);
+	public void onRbClicked(View view) {
+	    // Is the button now checked?
+	    boolean checked = ((RadioButton) view).isChecked();
+	    
+	    // Check which radio button was clicked
+	    switch(view.getId()) {
+	        case R.id.rbAuto:
+	            if (checked)
+	                autoInput=true;
+	            break;
+	        case R.id.rbManual:
+	            if (checked)
+	            	autoInput=false;
+	            break;
+	    }
+	}
+	public void startSudoku(View view){
+		Intent intent;
+		if (autoInput)
+			intent = new Intent(this, CameraActivity.class);
+		else
+			intent = new Intent(this, SolutionActivity.class);
 		startActivity(intent);
 	}
 }

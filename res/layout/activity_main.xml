@@ -1,44 +1,43 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fullscreen_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#000000"
+    tools:context=".MainActivity" >
 
-    <!--
-         The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc.
-    -->
+    <ImageButton
+        android:id="@+id/btnStart"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:layout_centerInParent="true"
+        android:background="@drawable/sudoku_button_desc"
+        android:onClick="startSudoku"
+        android:contentDescription="@string/startsudoku" />
+
+	<RadioGroup
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/btnStart"
+    android:layout_centerVertical="true"
+    android:layout_alignStart="@+id/btnStart"
+    android:orientation="vertical"
+    android:checkedButton="@+id/rbAuto">
+        <RadioButton
+        android:id="@+id/rbAuto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/autoinput"
+        android:onClick="onRbClicked" />
+    <RadioButton
+        android:id="@+id/rbManual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/manualinput"
+        android:onClick="onRbClicked" />
 
 
-    <!--
-         This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows.
-    -->
-
-    <RelativeLayout
-        android:id="@+id/fullscreen_content"
-        android:background="#000000"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-<!-- TODO: Replace image,resize -->
-
-        <ImageButton
-            android:id="@+id/btnStart"
-            android:layout_width="100dip"
-            android:layout_height="100dip"
-            android:layout_centerInParent="true"
-            android:background="@drawable/sudoku_button_desc"
-            android:onClick="startCamera" />
-
-        <MediaController
-            android:id="@+id/mediaController1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="42dp"
-            android:layout_marginTop="83dp"
-            android:layout_toRightOf="@+id/btnStart" >
-        </MediaController>
-    </RelativeLayout>
-
-</FrameLayout>
+	</RadioGroup>
+</RelativeLayout>
