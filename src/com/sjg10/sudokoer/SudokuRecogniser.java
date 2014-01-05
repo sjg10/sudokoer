@@ -197,16 +197,16 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 		baseApi.init(cameraAct.getFilesDir().getAbsolutePath(), "eng");
 		if (isCancelled()) return null;
 		publishProgress(11);
-		
+
 		baseApi.setVariable("tessedit_char_whitelist", "123456789");
 		baseApi.setPageSegMode(PageSegMode.PSM_SINGLE_CHAR);
 		String[][] grid=new String[9][9];
 		int inc=size/9; 
 		Bitmap bmp = Bitmap.createBitmap(inc-16, inc-16,Bitmap.Config.ARGB_8888);
 		if (isCancelled()) return null;
-    	publishProgress(12);
-    	
-    	//And begin:
+		publishProgress(12);
+
+		//And begin:
 		for (int i=0;i<9;i++){
 			for(int j=0;j<9;j++){
 				if (isCancelled()) return null;
@@ -235,7 +235,7 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 		baseApi.end();
 		if (isCancelled()) return null;
 		publishProgress(94);
-		
+
 		//Now lets begin to solve:
 		SudokuGrid puzzle = new SudokuGrid(grid);
 		Log.e("puzzle",puzzle.initialGridString());
@@ -248,7 +248,6 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 	protected void onPostExecute(SudokuGrid grid) {
 		if (dialog.isShowing()) 
 			dialog.dismiss();
-		if(!isCancelled()){
 		if(grid==null){
 			AlertDialog ad = new AlertDialog.Builder(cameraAct).create();
 			ad.setTitle("Computation Failed");
@@ -257,8 +256,7 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 			ad.setButton(AlertDialog.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {  
 				@Override  
 				public void onClick(DialogInterface dialog, int which) {
-					cameraAct.initialiseCamera(false);//TODO:Doesnt work, to replace finish()
-					//cameraAct.finish();
+					cameraAct.initialiseCamera(false);
 
 				}  
 			});  
@@ -269,8 +267,9 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 			Intent intent = new Intent(cameraAct, SolutionActivity.class);
 			intent.putExtra("sudoku", grid);
 			cameraAct.startActivity(intent);
-		}}
+		}
 	}
+
 	public void rotate_image_90n(Mat src, Mat dst, int angle){
 		if(src!=dst)
 			dst=src.clone();
@@ -293,8 +292,7 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 	@Override
 	protected void onCancelled(){
 		Toast.makeText(cameraAct, "Cancelled", Toast.LENGTH_SHORT).show();
-		cameraAct.initialiseCamera(false);//TODO:Doesnt work, to replace finish()
-		//cameraAct.finish();
+		cameraAct.initialiseCamera(false);
 	}
 
 };

@@ -49,6 +49,7 @@
         <activity
             android:name="com.sjg10.sudokoer.SolutionActivity"
             android:label="@string/title_activity_solution"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:parentActivityName="com.sjg10.sudokoer.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

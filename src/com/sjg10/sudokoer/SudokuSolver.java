@@ -30,7 +30,8 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
 	private ProgressDialog dialog;
 	private SudokuSolver me;
 	private SudokuGrid grid;
-	
+	private boolean failed;
+
 	public SudokuSolver(SolutionActivity activity){
 		me=this;
 		parent=activity;
@@ -44,12 +45,13 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
 		dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		dialog.setMessage("Solving");
 	}
-	
+
 	@Override
 	protected void onPreExecute() {
+		parent.orientationEventListener.disable();
 		dialog.show();
 	}
-	
+
 	@Override
 	protected String[][] doInBackground(SudokuGrid... sg) {
 		grid=sg[0];
@@ -68,24 +70,35 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
 		if (isCancelled()) return null;
 		return solutionGrid;
 	}
-	
+
 	protected void onPostExecute(String[][] solutionGrid) {
-		if (solutionGrid!=null){
-		for (int i=0;i<9;i++){
-			for (int j=0;j<9;j++){
-				parent.elements[i][j].setText(solutionGrid[i][j]);
+		if (!failed){
+			parent.solved=true;
+			for (int i=0;i<9;i++){
+				for (int j=0;j<9;j++){
+					parent.drawCanvas(solutionGrid);
+				}
 			}
+			parent.btn.setText(parent.getResources().getString(R.string.newpuzzle));
+			grid.solutionGrid=solutionGrid;
 		}
-		parent.solved=true;
-		parent.btn.setText(parent.getResources().getString(R.string.newpuzzle));
-		grid.solved=true;
-		grid.solutionGrid=solutionGrid;
-		}
+		else{//failed!
+			for (int i=0;i<10;i++)
+				parent.numberButtons[i].setEnabled(true);}
 		dialog.dismiss();
+		parent.orientationEventListener.enable();
 		parent.btn.setEnabled(true);
+		if(failed){
+			Toast.makeText(parent, "No solution exists", Toast.LENGTH_SHORT).show();
+		}
 	}
 	@Override
 	protected void onCancelled(){
+		dialog.dismiss();
+		for (int i=0;i<10;i++)
+			parent.numberButtons[i].setEnabled(true);
+		parent.orientationEventListener.enable();
+		parent.btn.setEnabled(true);
 		Toast.makeText(parent, "Cancelled", Toast.LENGTH_SHORT).show();
 	}
 }

@@ -8,6 +8,13 @@ An Android (>=v2.2) application that can take a Sudoku grid, inputted either man
 
 The camera recognition implements tools from the [OpenCV Project](http://opencv.org) and [tesseract](http://code.google.com/p/tesseract-ocr/) as implemented in the [tess-two package](https://github.com/rmtheis/tess-two).
 
+Build
+=====
+
+You are free to build and modify this project under the terms of the GPL. In order to do this you will require the [Android SDK](http://developer.android.com/sdk/index.html) and [NDK](http://developer.android.com/tools/sdk/ndk/index.html) installed and correctly configured.
+
+Then  [OpenCV for Android](http://opencv.org) and [tess-two package](https://github.com/rmtheis/tess-two) must be downloaded and built, before downloading the project hosted here and including the two preceeding projects as libraries.
+
 License
 =======
 
@@ -32,5 +39,6 @@ This project is licensed under the [GPLv3](http://www.gnu.org/licenses/).
 
 
 [OpenCV Project](http://opencv.org) is licensed under the [Modified BSD-license](http://opensource.org/licenses/BSD-3-Clause)
+
 [tess-two](https://github.com/rmtheis/tess-two)(http://opencv.org) is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 

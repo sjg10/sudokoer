@@ -1,27 +1,132 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:configChanges="keyboardHidden|orientation"
+    android:background="#0099cc"
     tools:context=".SolutionActivity" >
 
-        <TableLayout
-            android:id="@+id/gridSudoku"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:numColumns="9"
-            android:shrinkColumns="*" >
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
 
-        </TableLayout>
+        <SurfaceView
+            android:id="@+id/surfaceSudoku"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" >
+
+        <Button
+            android:id="@+id/button0"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:onClick="numberSelected"
+            android:text="@string/blank" />
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/one" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/two" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/three" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/four" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/five" />
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/six" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/seven" />
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/eight" />
+
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:onClick="numberSelected"
+                android:text="@string/nine" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" >
 
         <Button
             android:id="@+id/buttonSolve"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:text="@string/solve"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:enabled="false"
-            android:onClick="solve" />
+            android:onClick="solve"
+            android:text="@string/solve" />
+    </TableRow>
 
-    </LinearLayout>
+</TableLayout>
