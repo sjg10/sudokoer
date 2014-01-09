@@ -51,7 +51,7 @@ public class SudokuGrid implements Serializable{
 					returnStack.addElement(new SudokuElement(new int[]{i,j},initialGrid[i][j],true));
 			}
 		}
-		return null;
+		return returnStack;
 	}
 
 	public void solvedGridFromStack(Stack<SudokuElement> stack){
@@ -83,9 +83,9 @@ public class SudokuGrid implements Serializable{
 		int[] products = new int[27];
 		Arrays.fill(products, 1);
 		for(SudokuElement element : sudokuStack){
-			products[element.location[0]] *= primes[element.content];
-			products[element.location[1]+9] *= primes[element.content];
-			products[element.location[0]/3 * 3 + element.location[1]/3 + 18] *= primes[element.content];
+			products[element.location[0]] *= primes[element.content-1];
+			products[element.location[1]+9] *= primes[element.content-1];
+			products[element.location[0]/3 * 3 + element.location[1]/3 + 18] *= primes[element.content-1];
 		}
 		boolean out = true;
 		for(int iterator : products){
@@ -96,11 +96,6 @@ public class SudokuGrid implements Serializable{
 			}
 		}
 		return out;
-	}
-
-	public static boolean isConsistent(Stack<SudokuElement> stack) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

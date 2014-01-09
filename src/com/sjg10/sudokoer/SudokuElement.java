@@ -31,5 +31,11 @@ public class SudokuElement {
 		this.isDefinite = isDefinite;
 	}
 	
+	@Override
+	public String toString(){
+		return "pos=("+Integer.toString(location[0])+","+Integer.toString(location[1])+
+				") content="+Integer.toString(content)+" isDefinite="+Boolean.toString(isDefinite);
+	}
+	
 
 }

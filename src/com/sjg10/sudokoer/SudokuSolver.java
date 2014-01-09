@@ -25,6 +25,7 @@ import com.sjg10.sudokoer.R;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
@@ -83,26 +84,29 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 		return grid.solutionGrid;
 	}
 
-	private Stack<SudokuElement> makeNewGuess(Stack<SudokuElement> stack) {
+	private Stack<SudokuElement> makeNewGuess(Stack<SudokuElement> sudokuStack) {
+		int contentGuess=0;
+		Stack<SudokuElement> stack=sudokuStack;
 		if(stack.isEmpty()){
 			//no guesses (or knowns) at all have been made!
-			stack.addElement(new SudokuElement(new int[]{0, 0},1, false));
+			stack.push(new SudokuElement(new int[]{0, 0},1, false));
 			return stack;
 		}
-		Stack<SudokuElement> tempStack=new Stack<SudokuElement>();//to help store what weve checked
-		SudokuElement tempElement=stack.pop();//for now, iterator to get to last guess
-		while(tempElement.isDefinite==true || stack.isEmpty()){
-			tempStack.addElement(tempElement);
-			tempElement=stack.pop();
-		}
-		tempStack.addElement(tempElement);//throw the last guess in to tempstack
-		//now tempElement will be our new guess
-		
-		if(stack.isEmpty())//no guess has yet been made!
-			tempElement=new SudokuElement(new int[]{0, 0},1, false);
-		else
-			tempElement.content=1;//fix the easiest guess
+		do{contentGuess++;
+		stack =sudokuStack;
 
+		Stack<SudokuElement> tempStack=new Stack<SudokuElement>();//to help store what weve checked
+		SudokuElement tempElement=null;//for now, iterator to get to last guess
+		do{tempElement=stack.pop();
+		tempStack.push(tempElement);
+		}while(tempElement.isDefinite==true && !stack.isEmpty());
+		//now tempElement will be our new guess
+
+		if(stack.isEmpty())//no guess has yet been made!
+			tempElement=new SudokuElement(new int[]{0, -1},1, false);
+		else
+			tempElement.content=contentGuess;
+		
 		//Now find a position for it where no initial gridspace has been filled
 		//At a larger index than our last guess
 		do{
@@ -112,15 +116,18 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 				tempElement.location[0]++;
 			}
 			if (tempElement.location[0]==9){
-					//no new guesses: return empty stack
-					return new Stack<SudokuElement>();
+				//no new guesses: return empty stack
+				Log.e("GUESSES","NONE");
+				return new Stack<SudokuElement>();
 			}
 		}while (grid.initialGrid[tempElement.location[0]][tempElement.location[1]]!=0);
-		
+		Log.e("Element",tempElement.toString());
 		//Now lets put the top back on stack, with our new guess
+		
 		while(!tempStack.isEmpty())
 			stack.push(tempStack.pop());
 		stack.push(tempElement);
+		}while (!SudokuGrid.isConsistent(stack));
 		return stack;
 	}
 
@@ -148,14 +155,19 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 						if (tempElement.location[0]==9){
 							//this guess is useless, lets fix an earlier one instead!
 							moveDownStack=true;
+							break;
 						}
 					}
 
 				}
 
 				if(!moveDownStack){
-					stack.addElement(tempElement);
+					stack.push(tempElement);
 					//check the added guy is consistent:
+					for(SudokuElement elt: stack){
+						Log.e("Element",elt.toString());
+					}
+					Log.e("Element","END STACK");
 					if(!SudokuGrid.isConsistent(stack))
 						stack.pop();
 					else //keep looking
