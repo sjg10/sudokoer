@@ -56,8 +56,10 @@ public class SudokuGrid implements Serializable{
 		SudokuElement elt=null;
 		while(!stack.empty()){
 			elt=stack.pop();
+			solutionGrid[elt.location[0]][elt.location[1]]=elt.content;
 		}
 	}
+	
 	public String initialGridString(){
 		String out="-------------------\n";
 
