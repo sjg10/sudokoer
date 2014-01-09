@@ -19,6 +19,7 @@
 package com.sjg10.sudokoer;
 
 import java.io.Serializable;
+import java.util.Stack;
 
 public class SudokuGrid implements Serializable{
 	/**
@@ -40,7 +41,23 @@ public class SudokuGrid implements Serializable{
 			solver.execute(this);
 		}
 	}
+	public Stack<SudokuElement> initialGridToStack(){
+		Stack<SudokuElement> returnStack = new Stack<SudokuElement>();
+		for (int i=0;i<9;i++){
+			for (int j=0;j<9;j++){
+				if (initialGrid[i][j]!=0)
+					returnStack.addElement(new SudokuElement(new int[]{i,j},initialGrid[i][j],true));
+			}
+		}
+		return null;
+	}
 
+	public void solvedGridFromStack(Stack<SudokuElement> stack){
+		SudokuElement elt=null;
+		while(!stack.empty()){
+			elt=stack.pop();
+		}
+	}
 	public String initialGridString(){
 		String out="-------------------\n";
 
