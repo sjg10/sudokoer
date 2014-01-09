@@ -19,6 +19,7 @@
 package com.sjg10.sudokoer;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class SudokuGrid implements Serializable{
@@ -29,6 +30,7 @@ public class SudokuGrid implements Serializable{
 	public int initialGrid[][];
 	public int solutionGrid[][];
 	public boolean solved=false;
+	private static final int[] primes = {2, 3, 5, 7, 11, 13, 17, 19, 23};
 
 	public SudokuGrid(int[][] grid){
 		initialGrid=grid;
@@ -73,6 +75,25 @@ public class SudokuGrid implements Serializable{
 				out=out.concat("|\n-------------------\n");
 			else
 				out=out.concat("|\n");
+		}
+		return out;
+	}
+	
+	public static boolean isConsistent(Stack<SudokuElement> sudokuStack){
+		int[] products = new int[27];
+		Arrays.fill(products, 1);
+		for(SudokuElement element : sudokuStack){
+			products[element.location[0]] *= primes[element.content];
+			products[element.location[1]+9] *= primes[element.content];
+			products[element.location[0]/3 * 3 + element.location[1]/3 + 18] *= primes[element.content];
+		}
+		boolean out = true;
+		for(int iterator : products){
+			for (int divisor : primes){
+				if(iterator % (divisor*divisor)==0){
+					return false;
+				}
+			}
 		}
 		return out;
 	}
