@@ -24,7 +24,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
-import com.example.sudokoer.R;
+import com.sjg10.sudokoer.R;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -18,7 +18,7 @@
  */
 package com.sjg10.sudokoer;
 
-import com.example.sudokoer.R;
+import com.sjg10.sudokoer.R;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;

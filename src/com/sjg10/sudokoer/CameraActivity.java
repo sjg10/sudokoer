@@ -20,7 +20,7 @@ package com.sjg10.sudokoer;
 
 import java.io.IOException;
 
-import com.example.sudokoer.R;
+import com.sjg10.sudokoer.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;

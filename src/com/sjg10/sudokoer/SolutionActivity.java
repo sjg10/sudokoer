@@ -19,7 +19,7 @@
 
 package com.sjg10.sudokoer;
 
-import com.example.sudokoer.R;
+import com.sjg10.sudokoer.R;
 
 import android.os.Bundle;
 import android.app.Activity;
