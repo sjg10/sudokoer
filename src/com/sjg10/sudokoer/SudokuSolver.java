@@ -18,6 +18,8 @@
  */
 package com.sjg10.sudokoer;
 
+import java.util.Stack;
+
 import com.sjg10.sudokoer.R;
 
 import android.app.ProgressDialog;
@@ -100,5 +102,9 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 		parent.orientationEventListener.enable();
 		parent.btn.setEnabled(true);
 		Toast.makeText(parent, "Cancelled", Toast.LENGTH_SHORT).show();
+	}
+	
+	private Stack<SudokuElement> applyRules(Stack<SudokuElement> sudokuStack){
+		return null;
 	}
 }
