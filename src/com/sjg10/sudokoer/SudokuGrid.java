@@ -25,19 +25,12 @@ public class SudokuGrid implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public String initialGrid[][];
-	public String solutionGrid[][];
+	public int initialGrid[][];
+	public int solutionGrid[][];
 	public boolean solved=false;
 
-	public SudokuGrid(String[][] grid){
+	public SudokuGrid(int[][] grid){
 		initialGrid=grid;
-		for (int i=0;i<9;i++){
-			for (int j=0;j<9;j++){
-				if (initialGrid[i][j].length()==0)
-					initialGrid[i][j]="";
-
-			}
-		}
 		solutionGrid=grid;
 	}
 
@@ -55,7 +48,7 @@ public class SudokuGrid implements Serializable{
 			for (int j=0;j<9;j++){
 				if (j%3==0)
 					out=out.concat("| ");
-				out= (initialGrid[i][j]=="")?out.concat("  ") :out.concat(initialGrid[i][j]+" ");
+				out= (initialGrid[i][j]==0)?out.concat("  ") :out.concat(Integer.toString(initialGrid[i][j])+" ");
 			}
 			if((i+1)%3==0)
 				out=out.concat("|\n-------------------\n");

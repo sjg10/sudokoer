@@ -101,10 +101,10 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		//Set up puzzle
 		sg= (SudokuGrid) getIntent().getSerializableExtra("sudoku");
 		if(sg==null){
-			String[][] in=new String[9][9];
+			int[][] in=new int[9][9];
 			for (int i=0;i<9;i++){
 				for (int j=0;j<9;j++){
-					in[i][j]="";
+					in[i][j]=0;
 				}
 			}
 			sg=new SudokuGrid(in);
@@ -130,7 +130,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		holder.addCallback(this);
 	}
 
-	public void drawCanvas(String[][] grid) {
+	public void drawCanvas(int[][] grid) {
 		Canvas c=holder.lockCanvas();
 		int[] dim= min(view.getWidth(),view.getHeight());
 		size=dim[0];
@@ -163,7 +163,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		//Draw numbers
 		for(int i=0;i<9;i++){
 			for(int j=0;j<9;j++){
-				c.drawText(grid[i][j], topLeft[0]+(size*(2*j+1))/18, topLeft[1]+(size*(2*i+1))/18+textVerticalAdjust, text);
+				c.drawText((grid[i][j]!=0)?Integer.toString(grid[i][j]):"", topLeft[0]+(size*(2*j+1))/18, topLeft[1]+(size*(2*i+1))/18+textVerticalAdjust, text);
 			}
 		}
 		//Draw currently selected square
@@ -251,7 +251,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		for(int i=0;i<10;i++){
 			if (view.getId()==numberButtons[i].getId())
 				//Switched 1 and 0 due to x,y not matches column, row not row,column!
-				sg.initialGrid[selectedSquare[1]][selectedSquare[0]]=(i!=0)?Integer.toString(i):"";
+				sg.initialGrid[selectedSquare[1]][selectedSquare[0]]=i;
 		}
 		drawCanvas(sg.initialGrid);
 	}

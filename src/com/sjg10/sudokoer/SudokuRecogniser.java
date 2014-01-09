@@ -200,12 +200,12 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 
 		baseApi.setVariable("tessedit_char_whitelist", "123456789");
 		baseApi.setPageSegMode(PageSegMode.PSM_SINGLE_CHAR);
-		String[][] grid=new String[9][9];
+		int[][] grid=new int[9][9];
 		int inc=size/9; 
 		Bitmap bmp = Bitmap.createBitmap(inc-16, inc-16,Bitmap.Config.ARGB_8888);
 		if (isCancelled()) return null;
 		publishProgress(12);
-
+		String tmp="";
 		//And begin:
 		for (int i=0;i<9;i++){
 			for(int j=0;j<9;j++){
@@ -214,7 +214,13 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 				//TODO: consider removing the '8's that strip the border by something more dynamic
 				Utils.matToBitmap(M.submat(i*inc+8,(i+1)*inc-8,j*inc+8,(j+1)*inc-8),bmp);
 				baseApi.setImage(bmp);
-				grid[i][j] = baseApi.getUTF8Text();
+				tmp=baseApi.getUTF8Text();
+				if(tmp.length()==0)
+					grid[i][j]=0;
+				else
+					grid[i][j]=Integer.parseInt(tmp);
+
+
 				baseApi.clear();
 				//for debug
 				/*canvas = cameraAct.surfaceHolder.lockCanvas();

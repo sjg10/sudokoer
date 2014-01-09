@@ -25,7 +25,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
+public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 	private SolutionActivity parent;
 	private ProgressDialog dialog;
 	private SudokuSolver me;
@@ -53,9 +53,9 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
 	}
 
 	@Override
-	protected String[][] doInBackground(SudokuGrid... sg) {
+	protected int[][] doInBackground(SudokuGrid... sg) {
 		grid=sg[0];
-		String[][] solutionGrid=new String[9][9];
+		int[][] solutionGrid=new int[9][9];
 		//TODO: Replace following test lines with actual solver:
 		try {
 			Thread.sleep(2000);
@@ -64,14 +64,14 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, String[][]> {
 		}
 		for (int i=0;i<9;i++){
 			for (int j=0;j<9;j++){
-				solutionGrid[i][j]="";
+				solutionGrid[i][j]=0;
 			}
 		}
 		if (isCancelled()) return null;
 		return solutionGrid;
 	}
 
-	protected void onPostExecute(String[][] solutionGrid) {
+	protected void onPostExecute(int[][] solutionGrid) {
 		if (!failed){
 			parent.solved=true;
 			for (int i=0;i<9;i++){
