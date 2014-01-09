@@ -77,4 +77,9 @@ public class SudokuGrid implements Serializable{
 		return out;
 	}
 
+	public static boolean isConsistent(Stack<SudokuElement> stack) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
