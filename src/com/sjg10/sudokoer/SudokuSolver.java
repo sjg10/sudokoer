@@ -70,7 +70,6 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 		while(true){
 			if (stack.size()==81)
 				break;//we've solved it!
-			tempStack=applyRules(stack);
 			if (stack==tempStack){
 				tempStack=makeNewGuess(stack);
 				if(tempStack.isEmpty())//couldn't make new guess!
@@ -185,10 +184,5 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 		parent.orientationEventListener.enable();
 		parent.btn.setEnabled(true);
 		Toast.makeText(parent, "Cancelled", Toast.LENGTH_SHORT).show();
-	}
-
-	private Stack<SudokuElement> applyRules(Stack<SudokuElement> sudokuStack){
-		//TODO: add clever rules
-		return sudokuStack;
 	}
 }

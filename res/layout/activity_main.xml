@@ -3,7 +3,7 @@
     android:id="@+id/fullscreen_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="@color/black"
     tools:context=".MainActivity" >
 
     <ImageButton
@@ -22,7 +22,14 @@
     android:layout_centerVertical="true"
     android:layout_alignStart="@+id/btnStart"
     android:orientation="vertical"
-    android:checkedButton="@+id/rbAuto">
+    android:checkedButton="@+id/rbManual">
+        <RadioButton
+        android:id="@+id/rbManual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/manualinput"
+        android:onClick="onRbClicked" />
         <RadioButton
         android:id="@+id/rbAuto"
         android:layout_width="wrap_content"
@@ -30,14 +37,16 @@
         android:gravity="center"
         android:text="@string/autoinput"
         android:onClick="onRbClicked" />
-    <RadioButton
-        android:id="@+id/rbManual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/manualinput"
-        android:onClick="onRbClicked" />
-
-
 	</RadioGroup>
+
+	<TextView
+	    android:id="@+id/textView1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:text="@string/versionNumber"
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:textColor="@color/gray" />
+
 </RelativeLayout>

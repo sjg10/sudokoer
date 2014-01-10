@@ -67,7 +67,7 @@ public class SudokuRecogniser extends AsyncTask<byte[], Integer, SudokuGrid> {
 	@Override
 	protected void onPreExecute() {
 
-		cameraAct.endCamera();
+		cameraAct.endCamera(false);
 		dialog.show();
 	}
 

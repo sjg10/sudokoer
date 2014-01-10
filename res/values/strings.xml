@@ -10,8 +10,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_solution">SolutionActivity</string>
     
+    <string name="versionNumber">v1.0</string>
+    
     <string name="solve">Solve</string>
-    <string name="autoinput">Auto Input</string>
+    <string name="autoinput">Auto Input (Experimental)</string>
     <string name="manualinput">Manual Input</string>
     <string name="takephoto">Take Photo</string>
     <string name="startsudoku">Start Sudoku</string>

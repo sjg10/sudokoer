@@ -38,7 +38,7 @@ import android.widget.RadioButton;
 
 
 public class MainActivity extends Activity {
-	private boolean autoInput=true;
+	private boolean autoInput=false;
 	public AssetManager assetManager;
 	//This ensures that we retrieve things from OpenCV app.
 	//TODO: Consider making static (i.e. not from OpenCV app)!
@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		assetManager = getAssets();
 		installFiles();
-		
+
 	}
 
 	private void installFiles() {
@@ -91,22 +91,21 @@ public class MainActivity extends Activity {
 			fi.execute(files);
 		}
 	}
-	
+
 	public void onRbClicked(View view) {
-	    // Is the button now checked?
-	    boolean checked = ((RadioButton) view).isChecked();
-	    
-	    // Check which radio button was clicked
-	    switch(view.getId()) {
-	        case R.id.rbAuto:
-	            if (checked)
-	                autoInput=true;
-	            break;
-	        case R.id.rbManual:
-	            if (checked)
-	            	autoInput=false;
-	            break;
-	    }
+		// Is the button now checked?
+		boolean checked = ((RadioButton) view).isChecked();
+		// Check which radio button was clicked
+		if (checked){
+			switch(view.getId()) {
+			case R.id.rbAuto:
+				autoInput=true;
+				break;
+			case R.id.rbManual:
+				autoInput=false;
+				break;
+			}
+		}
 	}
 	public void startSudoku(View view){
 		Intent intent;

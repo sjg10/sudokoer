@@ -66,8 +66,6 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
-
-		
 		//prepare AsyncTask to run:
 		SudokuRecogniser sc =new SudokuRecogniser(this);
 		sc.execute(data);
@@ -101,6 +99,7 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 		    ad.show();  
 		}
 		camera.startPreview();
+		mLastRotation=-1;
 		reorientCamera();
 		buttonTake.setEnabled(true);
 		
@@ -119,28 +118,31 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	    parameters.setRotation(0);
 	    parameters.setZoom(0);
 	    parameters.setPictureFormat(PixelFormat.RGB_565);
-	    parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);//TODO: Change to macro?
+	    parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
 	    camera.setParameters(parameters);
 	    surfaceView = (SurfaceView)findViewById(R.id.surfaceView1);
 	    surfaceHolder=surfaceView.getHolder();
-	    surfaceHolder.addCallback(this);
+	    surfaceHolder.addCallback(this);}
 	    if(!firstTime){
 	    	try{
 				camera.setPreviewDisplay(surfaceHolder);}
 	    	catch(IOException e){
 	    	}
 	    	camera.startPreview();
-			reorientCamera();//TODO: doesn't actually work at this point!
+			reorientCamera();
 			buttonTake.setEnabled(true);
 	    }
-	    }
+	    
 		
 	}
 	
-	public void endCamera(){
+	public void endCamera(boolean andDestroy){
 		if (camera!=null){
-			camera.release();
-			camera=null;
+			camera.stopPreview();
+			if(!andDestroy){
+				camera.release();
+				camera=null;
+			}
 			surfaceHolder.removeCallback(this);
 			orientationEventListener.disable();
 		}
@@ -149,7 +151,6 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	public void reorientCamera() {
 	    	Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 	    	int rot=display.getRotation();
-	    	if(rot!= mLastRotation){
 	    	switch(rot){
 	    	case Surface.ROTATION_0: //portrait
 	    		camera.setDisplayOrientation(90);
@@ -166,10 +167,10 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 	    	}
 	    	mLastRotation=rot;
 		
-	}}
+	}
 	@Override
 	public void onDestroy(){
-		endCamera();
+		endCamera(true);
 		super.onDestroy();
 	}
 }
