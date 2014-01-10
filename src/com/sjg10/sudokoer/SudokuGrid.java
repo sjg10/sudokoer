@@ -1,7 +1,7 @@
 /**
  *  Sudokoer
  *  Component SudokuGrid
- *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk) and Yi Zhang (yi.zhang7210@gmail.com)
  *  
  *  Sudokoer is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,14 +27,17 @@ public class SudokuGrid implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public int initialGrid[][];
-	public int solutionGrid[][];
+	public int initialGrid[][]=new int[9][9];
+	public int solutionGrid[][]=new int[9][9];
 	public boolean solved=false;
 	private static final int[] primes = {2, 3, 5, 7, 11, 13, 17, 19, 23};
 
 	public SudokuGrid(int[][] grid){
-		initialGrid=grid;
-		solutionGrid=grid;
+		initialGrid=grid.clone();
+		for(int i=0;i<9;i++){
+			for(int j=0;j<9;j++){
+			solutionGrid[i][j]=0;
+		}}
 	}
 
 	public void solve(SolutionActivity act){

@@ -1,7 +1,7 @@
 /**
  *  Sudokoer
  *  Component SudokuSolver
- *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk) and Yi Zhang (yi.zhang7210@gmail.com)
  *  
  *  Sudokoer is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import com.sjg10.sudokoer.R;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
@@ -59,12 +58,6 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 
 	@Override
 	protected int[][] doInBackground(SudokuGrid... sg) {
-		//needed because too fast!
-		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			Log.getStackTraceString(e);
-		}
 		if (isCancelled()) return null;
 		grid=sg[0];
 		Stack<SudokuElement> stack=grid.initialGridToStack();
@@ -73,7 +66,7 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 			inconsistentInput=true;
 			return null;
 		}
-
+		if (isCancelled()) return null;
 		while(true){
 			if (stack.size()==81)
 				break;//we've solved it!
@@ -167,11 +160,7 @@ public class SudokuSolver extends AsyncTask<SudokuGrid, Integer, int[][]> {
 	protected void onPostExecute(int[][] solutionGrid) {
 		if (solutionGrid!=null){
 			parent.solved=true;
-			for (int i=0;i<9;i++){
-				for (int j=0;j<9;j++){
-					parent.drawCanvas(solutionGrid);
-				}
-			}
+			parent.drawCanvas();
 			parent.btn.setText(parent.getResources().getString(R.string.newpuzzle));
 		}
 		else{//failed!

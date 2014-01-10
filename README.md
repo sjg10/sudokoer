@@ -13,7 +13,7 @@ Build
 
 You are free to build and modify this project under the terms of the GPL. In order to do this you will require the [Android SDK](http://developer.android.com/sdk/index.html) and [NDK](http://developer.android.com/tools/sdk/ndk/index.html) installed and correctly configured.
 
-Then  [OpenCV for Android](http://opencv.org) and [tess-two package](https://github.com/rmtheis/tess-two) must be downloaded and built, before downloading the project hosted here and including the two preceeding projects as libraries.
+Then  [OpenCV for Android](http://opencv.org) and [tess-two package](https://github.com/rmtheis/tess-two) must be downloaded and built, before downloading the project hosted here and including the two preceeding projects as libraries, either in an IDE or by editing the project.properties file as appropriate.
 
 License
 =======
@@ -21,7 +21,7 @@ License
 This project is licensed under the [GPLv3](http://www.gnu.org/licenses/).
 
 	\*
-	 *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+	 *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk) and Yi Zhang (yi.zhang7210@gmail.com)
 	 *  
 	 *  Sudokoer is free software: you can redistribute it and/or modify
 	 *  it under the terms of the GNU General Public License as published by

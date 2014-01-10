@@ -1,7 +1,7 @@
 /**
  *  Sudokoer
  *  Component MainActivity
- *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk) and Yi Zhang (yi.zhang7210@gmail.com)
  *  
  *  Sudokoer is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

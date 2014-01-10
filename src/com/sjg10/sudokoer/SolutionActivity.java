@@ -1,7 +1,7 @@
 /**
  *  Sudokoer
  *  Component SolutionActivity
- *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk)
+ *  (C) 2014 by Samuel Gonshaw (sjg10@imperial.ac.uk) and Yi Zhang (yi.zhang7210@gmail.com)
  *  
  *  Sudokoer is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
@@ -51,7 +52,8 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 	private Paint thin;
 	private Paint red;
 	private Paint background;
-	private Paint text;
+	private Paint textSolved;
+	private Paint textInitial;
 	private SurfaceView view;
 	public Button[] numberButtons=new Button[10];
 	private int[] selectedSquare={0,0};//Will be {9,x} iff no square selected
@@ -59,6 +61,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 	private int size=0;
 	private int textVerticalAdjust=0;
 	public OrientationEventListener orientationEventListener;
+	private Paint gridBackground;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,28 +77,8 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		for (int i=0;i<10;i++){
 			numberButtons[i]=(Button)findViewById(getResources().getIdentifier("button"+Integer.toString(i), "id", getPackageName()));
 		}
-		thick=new Paint();
-		thick.setColor(Color.BLACK);
-		thick.setStyle(Style.STROKE);
-		thick.setStrokeWidth(5);
-		thin=new Paint();
-		thin.setColor(Color.BLACK);
-		thin.setStyle(Style.STROKE);
-		thin.setStrokeWidth(2);
-		red=new Paint();
-		red.setColor(Color.RED);
-		red.setStyle(Style.STROKE);
-		red.setStrokeWidth(5);
-		background=new Paint();
-		background.setColor(Color.WHITE);
-		background.setStyle(Style.FILL);
-		text=new Paint();
-		text.setTextAlign(Align.CENTER);
-		text.setColor(Color.BLACK);
-		text.setTextSize(getResources().getDimension(R.dimen.myFontSize));
-		Rect bounds=new Rect();
-		text.getTextBounds("0", 0, 1, bounds);
-		textVerticalAdjust=(bounds.bottom-bounds.top)/2;
+		preparePaint();
+		
 
 
 		//Set up puzzle
@@ -114,14 +97,12 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 			@Override
 			public void onOrientationChanged(int orientation) {
 				//the following is orientation dependent:
-				text.setTextSize(getResources().getDimension(R.dimen.myFontSize));
+				textSolved.setTextSize(getResources().getDimension(R.dimen.myFontSize));
+				textInitial.setTextSize(getResources().getDimension(R.dimen.myFontSize));
 				Rect bounds=new Rect();
-				text.getTextBounds("0", 0, 1, bounds);
+				textSolved.getTextBounds("0", 0, 1, bounds);
 				textVerticalAdjust=(bounds.bottom-bounds.top)/2;
-				if(!solved)
-					drawCanvas(sg.initialGrid);
-				else
-					drawCanvas(sg.solutionGrid);
+				drawCanvas();
 			}
 		};
 		view=((SurfaceView)findViewById(R.id.surfaceSudoku));
@@ -130,7 +111,41 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		holder.addCallback(this);
 	}
 
-	public void drawCanvas(int[][] grid) {
+	private void preparePaint() {
+		thick=new Paint();
+		thick.setColor(Color.BLACK);
+		thick.setStyle(Style.STROKE);
+		thick.setStrokeWidth(5);
+		thin=new Paint();
+		thin.setColor(Color.BLACK);
+		thin.setStyle(Style.STROKE);
+		thin.setStrokeWidth(2);
+		red=new Paint();
+		red.setColor(Color.RED);
+		red.setStyle(Style.STROKE);
+		red.setStrokeWidth(5);
+		background=new Paint();
+		background.setColor(Color.BLACK);
+		background.setStyle(Style.FILL);
+		gridBackground=new Paint();
+		gridBackground.setColor(Color.WHITE);
+		gridBackground.setStyle(Style.FILL);
+		textSolved=new Paint();
+		textSolved.setTextAlign(Align.CENTER);
+		textSolved.setColor(Color.GRAY);
+		textSolved.setTextSize(getResources().getDimension(R.dimen.myFontSize));
+		textInitial=new Paint();
+		textInitial.setTextAlign(Align.CENTER);
+		textInitial.setColor(Color.BLACK);
+		textInitial.setTextSize(getResources().getDimension(R.dimen.myFontSize));
+		textInitial.setFakeBoldText(true);
+		Rect bounds=new Rect();
+		textSolved.getTextBounds("0", 0, 1, bounds);
+		textVerticalAdjust=(bounds.bottom-bounds.top)/2;
+		
+	}
+
+	public void drawCanvas() {
 		Canvas c=holder.lockCanvas();
 		int[] dim= min(view.getWidth(),view.getHeight());
 		size=dim[0];
@@ -144,6 +159,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		}
 		//Draw background and surround
 		c.drawPaint(background);
+		c.drawRect(topLeft[0], topLeft[1], topLeft[0]+size,topLeft[1]+ size,gridBackground);
 		c.drawRect(topLeft[0], topLeft[1], topLeft[0]+size,topLeft[1]+ size,thick);
 		//Draw vertical lines
 
@@ -163,7 +179,12 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 		//Draw numbers
 		for(int i=0;i<9;i++){
 			for(int j=0;j<9;j++){
-				c.drawText((grid[i][j]!=0)?Integer.toString(grid[i][j]):"", topLeft[0]+(size*(2*j+1))/18, topLeft[1]+(size*(2*i+1))/18+textVerticalAdjust, text);
+				if(sg.initialGrid[i][j]!=0){
+					c.drawText(Integer.toString(sg.initialGrid[i][j]), topLeft[0]+(size*(2*j+1))/18, topLeft[1]+(size*(2*i+1))/18+textVerticalAdjust, textInitial);
+					Log.e("drawInit",Integer.toString(i)+Integer.toString(j));}
+				else if(solved){
+					c.drawText(Integer.toString(sg.solutionGrid[i][j]), topLeft[0]+(size*(2*j+1))/18, topLeft[1]+(size*(2*i+1))/18+textVerticalAdjust, textSolved);
+					Log.e("drawSolved",Integer.toString(i)+Integer.toString(j));}
 			}
 		}
 		//Draw currently selected square
@@ -212,7 +233,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		drawCanvas(sg.initialGrid);
+		drawCanvas();
 		orientationEventListener.enable();
 		btn.setEnabled(true);
 		for (int i=0;i<10;i++)
@@ -243,7 +264,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 				for (int i=0;i<10;i++)
 					numberButtons[i].setEnabled(false);
 			}
-			drawCanvas(sg.initialGrid);
+			drawCanvas();
 		}
 		return false;
 	}
@@ -253,7 +274,7 @@ public class SolutionActivity extends Activity implements SurfaceHolder.Callback
 				//Switched 1 and 0 due to x,y not matches column, row not row,column!
 				sg.initialGrid[selectedSquare[1]][selectedSquare[0]]=i;
 		}
-		drawCanvas(sg.initialGrid);
+		drawCanvas();
 	}
 
 }
