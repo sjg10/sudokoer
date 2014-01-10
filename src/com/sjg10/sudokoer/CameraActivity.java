@@ -173,4 +173,17 @@ public class CameraActivity extends Activity implements Camera.PictureCallback,S
 		endCamera(true);
 		super.onDestroy();
 	}
+	@Override
+	public void onPause(){
+		super.onPause();
+		endCamera(false);
+	}
+	@Override
+	public void onRestart(){
+		super.onRestart();
+		initialiseCamera(true);
+	}
+	
+	
+	
 }
