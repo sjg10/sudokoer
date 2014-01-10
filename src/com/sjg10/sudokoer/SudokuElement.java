@@ -26,7 +26,7 @@ public class SudokuElement {
 	
 	/* Constructor */
 	public SudokuElement(int[] location, int content, boolean isDefinite){
-		this.location = location;
+		this.location = location.clone();
 		this.content = content;
 		this.isDefinite = isDefinite;
 	}

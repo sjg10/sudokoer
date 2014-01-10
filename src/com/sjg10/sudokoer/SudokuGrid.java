@@ -61,7 +61,7 @@ public class SudokuGrid implements Serializable{
 			solutionGrid[elt.location[0]][elt.location[1]]=elt.content;
 		}
 	}
-	
+
 	public String initialGridString(){
 		String out="-------------------\n";
 
@@ -78,9 +78,10 @@ public class SudokuGrid implements Serializable{
 		}
 		return out;
 	}
-	
+
 	public static boolean isConsistent(Stack<SudokuElement> sudokuStack){
-		int[] products = new int[27];
+		if (sudokuStack.isEmpty()) return true;
+		long[] products = new long[27];
 		Arrays.fill(products, 1);
 		for(SudokuElement element : sudokuStack){
 			products[element.location[0]] *= primes[element.content-1];
@@ -88,7 +89,7 @@ public class SudokuGrid implements Serializable{
 			products[element.location[0]/3 * 3 + element.location[1]/3 + 18] *= primes[element.content-1];
 		}
 		boolean out = true;
-		for(int iterator : products){
+		for(long iterator : products){
 			for (int divisor : primes){
 				if(iterator % (divisor*divisor)==0){
 					return false;
